@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order</title>
+</head>
+<body>
+<h2>Place an Order</h2>
+
+<label for="userName">Your Name:</label>
+<input type="text" id="userName" required>
+
+<label for="product">Select Product:</label>
+<select id="product"></select>
+
+<button onclick="placeOrder()">Place Order</button>
+
+<p id="response"></p>
+
+<script>
+
+    async function loadProducts() {
+          const response = await fetch('/products');
+          const products = await response.json();
+          const productDropdown = document.getElementById("product");
+
+          products.forEach(product => {
+              let option = document.createElement("option");
+              option.value = product.id;
+              option.textContent = product.name;
+              productDropdown.appendChild(option);
+          });
+      }
+
+    async function placeOrder() {
+            const userName = document.getElementById("userName").value;
+            const productId = document.getElementById("product").value;
+
+            if (!userName || !productId) {
+                alert("Please enter your name and select a product.");
+                return;
+            }
+
+            const response = await fetch(`/orders/place?userName=${userName}&productId=${productId}`, {
+                method: "POST"
+            });
+
+            const text = await response.text();
+            document.getElementById("response").innerText = text;
+        }
+
+        // Load products when the page loads
+        window.onload = loadProducts;
+</script>
+</body>
+</html>
